@@ -51,10 +51,19 @@ var trivia = {
 				answers.push(questions[randomNumber].incorrect_answers[i])
 			}
 			//This dynamically adds all the answers, incorrect and correct, to the document in a random order
-			for(i = 0; i<answers.length; i++){
-				$('#'+i).html(answers[i]);
-				$('#'+i).attr('data-answer', answers[i]);				
+			for(i = 0; i<4; i++){
+				//I first created a random number between 0 and the length of the answers array
+				var randomIndex = Math.floor(Math.random() * answers.length);
+				$('#'+i).html(answers[randomIndex]);
+				//I also give it a data-answer attribute in order to check it against correct answer
+				//I do that in the guess method of this object
+				$('#'+i).attr('data-answer', answers[randomIndex]);	
+				//I then get rid of that value i used from my answers array
+				//When I do this the lenght of my array is one less
+				//This means that when I loop through this again the randomIndex generated will be one less
+				answers.splice(randomIndex, 1);			
 			}
+			//I splice the question again so I don't reuse it
 			questions.splice(randomNumber, 1);
 		}
 	},
@@ -68,6 +77,18 @@ var trivia = {
 			//By specifying the questions.length instead of an exact number I can still use this even when I remove a question from the array
 			var randomNumber = Math.floor(Math.random()*questions.length);
 			$('#triviaQuestion').html(questions[randomNumber].question);
+			var answers = [];
+			correct = questions[randomNumber].correct_answer;
+			answers.push(correct);
+			for(i = 0; i<questions[randomNumber].incorrect_answers.length;i++){
+				answers.push(questions[randomNumber].incorrect_answers[i])
+			}
+			for(i = 0; i<4; i++){
+				var randomIndex = Math.floor(Math.random() * answers.length);
+				$('#'+i).html(answers[randomIndex]);
+				$('#'+i).attr('data-answer', answers[randomIndex]);
+				answers.splice(randomIndex, 1);			
+			}
 			questions.splice(randomNumber, 1);
 			trivia.time = 30;
 			trivia.start();
@@ -76,8 +97,8 @@ var trivia = {
 	guess: function() {
 		console.log($(this));
 		console.log(correct);
-		if($(this).attr('id') === '0'){
-			console.log('Correct');
+		if($(this).attr('data-answer') === correct){
+			console.log('Genius!');
 		}
 		else{
 			console.log('Incorrect');
