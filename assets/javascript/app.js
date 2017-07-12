@@ -32,10 +32,12 @@ var trivia = {
 	time: 30,
 	start: function() {
 		$('#initial').remove();
-		countdownRunning: false;
+		$('#triviaQA').show();
+		countdownRunning = false;
 		if(!countdownRunning) {
 			$('#timer').html('Time Remaining: 30 Seconds');
 			intervalId = setInterval(trivia.count, 1000);
+			console.log(trivia.time);
 		}
 		//This allows me to only print this out if it is the first question
 		if(firstQuestion){
@@ -81,7 +83,7 @@ var trivia = {
 			correct = questions[randomNumber].correct_answer;
 			answers.push(correct);
 			for(i = 0; i<questions[randomNumber].incorrect_answers.length;i++){
-				answers.push(questions[randomNumber].incorrect_answers[i])
+				answers.push(questions[randomNumber].incorrect_answers[i]);
 			}
 			for(i = 0; i<4; i++){
 				var randomIndex = Math.floor(Math.random() * answers.length);
@@ -94,14 +96,44 @@ var trivia = {
 			trivia.start();
 		}
 	},
+	guessTime: 0,
+	correctAnswer: function() {
+		clearInterval(intervalId);
+		trivia.start();
+	},
+	incorrectAnswer: function() {
+		clearInterval(intervalId);
+		trivia.start();
+	},
 	guess: function() {
-		console.log($(this));
-		console.log(correct);
+		//This makes sure that the countdown timer stops
+		clearInterval(intervalId);
+		$('#triviaQA').hide();
+		countdownRunning = true;
+		firstQuestion = false;
+		var randomNumber = Math.floor(Math.random()*questions.length);
+		$('#triviaQuestion').html(questions[randomNumber].question);
+		var answers = [];
+		correct = questions[randomNumber].correct_answer;
+		answers.push(correct);
+		for(i = 0; i<questions[randomNumber].incorrect_answers.length;i++){
+			answers.push(questions[randomNumber].incorrect_answers[i])
+		}
+		for(i = 0; i<4; i++){
+			var randomIndex = Math.floor(Math.random() * answers.length);
+			$('#'+i).html(answers[randomIndex]);
+			$('#'+i).attr('data-answer', answers[randomIndex]);
+			answers.splice(randomIndex, 1);			
+		}
+		questions.splice(randomNumber, 1);
+		trivia.time = 30;
 		if($(this).attr('data-answer') === correct){
-			console.log('Genius!');
+			console.log('genius');
+			intervalId = setInterval(trivia.correctAnswer, 10000);
 		}
 		else{
 			console.log('Incorrect');
+			intervalId = setInterval(trivia.incorrectAnswer, 10000);
 		}
 	}
 };
