@@ -7,6 +7,10 @@ var countdownRunning = false;
 var myToken;
 var questions;
 var correct;
+var searchText;
+var apiurl;
+var apiurlSize;
+var myresult;
 var token = {
 	retrieve: function() {
 		//The purpose of the session token is to not given the player the same questions once he has lost/won
@@ -33,6 +37,7 @@ var trivia = {
 		$('#initial').remove();
 		$('#triviaQA').show();
 		$('.response').empty();
+		$('#responseImg').hide();
 		countdownRunning = false;
 		if(!countdownRunning) {
 			$('#timer').html('Time Remaining: 30 Seconds');
@@ -64,6 +69,7 @@ var trivia = {
 		}
 		//I splice the question again so I don't reuse it
 		questions.splice(randomNumber, 1);
+		flickr.retrieve();
 	},
 	count: function() {
 		trivia.time--;
@@ -91,7 +97,6 @@ var trivia = {
 		trivia.start();
 	},
 	guess: function() {
-		console.log(correct);
 		//This makes sure that the countdown timer stops
 		clearInterval(intervalId);
 		$('#triviaQA').hide();
@@ -103,27 +108,59 @@ var trivia = {
 		}
 		else{
 			$('#response').html('Incorrect');
-			$('#responseMessage').html("The correct answer was " + correct)
+			$('#responseMessage').html("The correct answer was " + correct);
 			intervalId = setInterval(trivia.incorrectAnswer, 10000);
 		}
+		flickr.show();
 	}
 };
-// var flickr = {
-// 	retrieve: function() {
-// 		//The purpose of the session token is to not given the player the same questions once he has lost/won
-// 		//This works by helping the server keep track of the questions that have already been requested
-// 		var apiKey = "7c6549a01454c9b945a03306f1b05afe";
-// 		$.get(requestApi, function(data) {
-// 			myToken = data.token;
-// 			token.pull();
-// 		});
-// 	},
-// 	pull: function() {
-// 		//I am using the session token load all the questions
-// 		var useToken = "https://api.flickr.com/services/rest/?method=flickr.test.echo&name=value";
-// 		$.get(useToken, function(data){
-// 			console.log(data)
-// 		});
-// 	}
-// }
-// flickr.pull();
+var flickr = {
+	//I wrote it like this for readibility 
+	retrieve: function() {
+		searchText = correct.replace(/\s/g, '+');
+		apiurl = "https://api.flickr.com/services/rest/"
+	+ "?method=flickr.photos.search"
+	+ "&api_key=833f5b1dd5108c4898d441141b377a88"
+	+ "&text="
+	+ searchText
+	+ "&sort=relevance"
+	+ "&safe_search=1"
+	+ "&content_type=6"
+	+ "&media=photos"
+	+ "&per_page=10"
+	+ "&format=json"
+	+ "&nojsoncallback=1";
+	flickr.pull();
+	},
+	pull: function(){
+		$.get(apiurl, function(json){
+			$.each(json.photos.photo, function(i, myresult){
+				apiurlSize = "https://api.flickr.com/services/rest/"
+				+ "?method=flickr.photos.getSizes"
+				+ "&api_key=833f5b1dd5108c4898d441141b377a88"
+				+ "&photo_id="
+				+ myresult.id
+				+ "&format=json"
+				+ "&nojsoncallback=1";
+				$.get(apiurlSize, function(size){
+					$.each(size.sizes.size, function(i, myresultSize){
+						if(myresultSize.width ==500) {
+							$('#responseImg').attr('src', myresultSize.source);
+						}
+					})
+				})
+			});
+		});
+	},
+	show: function() {
+		$('#responseImg').show();
+	}
+};
+
+
+
+
+
+
+
+
