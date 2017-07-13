@@ -117,33 +117,51 @@ var trivia = {
 var flickr = {
 	//I wrote it like this for readibility 
 	retrieve: function() {
+		//This accounts for spacing in the correct answer.
 		searchText = correct.replace(/\s/g, '+');
 		apiurl = "https://api.flickr.com/services/rest/"
-	+ "?method=flickr.photos.search"
-	+ "&api_key=833f5b1dd5108c4898d441141b377a88"
-	+ "&text="
-	+ searchText
-	+ "&sort=relevance"
-	+ "&safe_search=1"
-	+ "&content_type=6"
-	+ "&media=photos"
-	+ "&per_page=10"
-	+ "&format=json"
-	+ "&nojsoncallback=1";
-	flickr.pull();
+		+ "?method=flickr.photos.search"
+		+ "&api_key=833f5b1dd5108c4898d441141b377a88"
+		+ "&text="
+		+ searchText
+		+ "&sort=relevance"
+		//This makes sure I keep it as close to pg rated as I can
+		+ "&safe_search=1"
+		//This allows me to grab everything but screenshots
+		+ "&content_type=6"
+		//This allows me to not grab video
+		+ "&media=photos"
+		//Although I only want one image, I grab 10.
+		//I do that because when I filter for pictures with a width of 500px I might not get a picture
+		//This occurs when the most relevant picture is smaller than 500px
+		//Flickrs api doesn't have a method of doing this
+		+ "&per_page=10"
+		+ "&format=json"
+		+ "&nojsoncallback=1";
+		flickr.pull();
 	},
 	pull: function(){
 		$.get(apiurl, function(json){
+			//the each method allows me to adjust each one of the objects in the apiurl array
+			//Because I called for 10 there are 10 to account for
+			//This is what the i does
 			$.each(json.photos.photo, function(i, myresult){
 				apiurlSize = "https://api.flickr.com/services/rest/"
 				+ "?method=flickr.photos.getSizes"
 				+ "&api_key=833f5b1dd5108c4898d441141b377a88"
 				+ "&photo_id="
+				//This grabs each object and calls on its id property
 				+ myresult.id
 				+ "&format=json"
 				+ "&nojsoncallback=1";
+				//I then get the 10 apiurlSize strings
 				$.get(apiurlSize, function(size){
+					//for each one of them I check whether or not they have a size of 500
 					$.each(size.sizes.size, function(i, myresultSize){
+						//if they do then i'll use the src property of that object and set it as my src attribute for my image
+						//this is technically replacing the image over and over again until there isn't one left
+						//so if there are 10 relevant pictures that have a size of 500px, then i'll change the src image 10 times
+						//the last image being the one the client sees
 						if(myresultSize.width ==500) {
 							$('#responseImg').attr('src', myresultSize.source);
 						}
@@ -156,11 +174,3 @@ var flickr = {
 		$('#responseImg').show();
 	}
 };
-
-
-
-
-
-
-
-

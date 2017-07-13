@@ -1,0 +1,23 @@
+html {
+	height: 100%;
+	background: #0f3443;
+}
+body {
+	background: #0f3443; /* fallback for old browsers */
+	background: -webkit-linear-gradient(bottom, #0f3443, #34e89e);
+	background: -o-linear-gradient(bottom, #0f3443, #34e89e);
+	background: linear-gradient(to top, #0f3443, #34e89e); /* Chrome 10-25, Safari 5.1-6 */ /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+	height: 100%;
+	color: #0f3443;
+
+}
+/* Centers the image appropriatly */
+#responseImg {
+	max-width: 100%;
+	margin: 0 auto;
+	display: block;
+}
+#startButton {
+	background: #0f3443;
+	color: whitesmoke;
+}
