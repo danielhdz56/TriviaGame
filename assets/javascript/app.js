@@ -23,6 +23,7 @@ window.onload = function() {
 }
 var difficulty;
 var questions;
+var numberOfQuestions = [5, 15, 25, 50];
 var category;
 var intervalId;
 var countdownRunning = false;
@@ -36,16 +37,71 @@ var apiurl;
 var apiurlSize;
 var myresult;
 
+var easy = {
+	5: [],
+	15: [],
+	25: [],
+	50: []
+};
+var medium = {
+	5: [],
+	15: [],
+	25: [],
+	50: []
+};
+var hard = {
+	5: [],
+	15: [],
+	25: [],
+	50: []
+};
+
+function checker(difficulty, number, category){
+	var useToken = "https://opentdb.com/api.php"
+	+ "?amount=" + number
+	+ "&category=" + category
+	+ "&difficulty=" + difficulty
+	+ "&type=multiple";
+	$.get(useToken, function(data){
+		questions = data.results;
+		if(data.response_code!==0){
+			if(difficulty === "easy") {
+				easy[number].push(category);
+			}
+			else if(difficulty === "medium") {
+				medium[number].push(category);
+			}
+			else{
+				hard[number].push(category);
+			}
+		}
+	});
+}
+
 var options = {
 	difficulty: function() {
 		difficulty = $(this).attr('id');
 		$('#difficulty').hide();
 		$('#numberOfQuestions').show();
+		for (i=0; i<numberOfQuestions.length; i++){
+			for (j=9; j<33; j++) {
+			checker(difficulty, numberOfQuestions[i], j);
+			}
+		}
 	},
 	questions: function() {
-		questions = $(this).attr('id');
+		questions = $(this).attr('data');
 		$('#numberOfQuestions').hide();
 		$('#category').show();
+		// if(difficulty === "easy") {
+		// 	console.log(easy[questions]);
+		// }
+		// else if(difficulty === "medium") {
+		// 	console.log(medium[questions]);
+		// }
+		// else{
+		// 	console.log(hard[questions]);
+		// }
 	},
 	category: function() {
 		category = $(this).attr('id');
