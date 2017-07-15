@@ -4,7 +4,7 @@ window.onload = function() {
 	$('.categories').click(options.category);
 	$('#startButton').click(trivia.start);
 	$('.choice').click(trivia.guess);
-	
+	$('#resetButton').click(trivia.reset);
 	$('.difficulty, .questions, .categories').hover(
 		function(){
 			$(this).addClass('hoverSelection');
@@ -30,6 +30,7 @@ var myToken;
 var correct;
 var userCorrect = 0;
 var userIncorrect = 0;
+var userTotal;
 var searchText;
 var apiurl;
 var apiurlSize;
@@ -85,10 +86,10 @@ var trivia = {
 		}
 		else {
 			trivia.time = 30;
-			$('#initial').remove();
+			$('#initial').hide();
 			$('#triviaQA').show();
 			$('.response').empty();
-			$('#responseImg').hide();
+			$('#guessResponse').hide();
 			countdownRunning = false;
 			if(!countdownRunning) {
 				$('#timer').html('Time Remaining: 30 Seconds');
@@ -169,11 +170,19 @@ var trivia = {
 		flickr.show();
 	},
 	endScreen: function() {
+		userTotal = userCorrect + userIncorrect;
 		$('#guessResponse').hide();
 		$('#gameOver').show();
 		$('#correctScore').html("Total correct questions: " + userCorrect);
 		$('#incorrectScore').html("Total incorrect questions: " + userIncorrect);
-		$('#totalScore').html("Total questions answered: " + userCorrect+userIncorrect);
+		$('#totalScore').html("Total questions answered: " + userTotal);
+	},
+	reset: function() {
+		$('#difficulty').show();
+		$('#timer').empty();
+		$('#gameOver').hide();
+		userCorrect = 0;
+		userIncorrect = 0;
 	}
 };
 var flickr = {
@@ -235,6 +244,6 @@ var flickr = {
 		});
 	},
 	show: function() {
-		$('#responseImg').show();
+		$('#guessResponse').show();
 	}
 };
