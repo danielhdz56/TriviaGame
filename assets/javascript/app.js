@@ -22,8 +22,12 @@ window.onload = function() {
 	);
 }
 var difficulty;
+//This holds all the questions obtained from the object
+var triviaQuestions;
+//This holds the number of questions the user picks
 var questions;
 var numberOfQuestions = [5, 15, 25, 50];
+var errorResponseCategories;
 var category;
 var intervalId;
 var countdownRunning = false;
@@ -57,26 +61,22 @@ var difficultySetting = {
 	}
 };
 
+
 function checker(difficulty, number, category){
 	var useToken = "https://opentdb.com/api.php"
 	+ "?amount=" + number
 	+ "&category=" + category
 	+ "&difficulty=" + difficulty
 	+ "&type=multiple";
-	$.get(useToken, function(data){
-		questions = data.results;
-		if(data.response_code!==0){
-			// if(difficulty === "easy") {
-			// 	difficultySetting.easy[number].push(category);
-			// }
-			// else if(difficulty === "medium") {
-			// 	difficultySetting.medium[number].push(category);
-			// }
-			// else{
-			// 	difficultySetting.hard[number].push(category);
-			// }
-			difficultySetting[difficulty][number].push(category);
-		}
+	$.ajax({
+		method: "GET",
+		url: useToken,
+		success: function(data) {
+	        triviaQuestions = data.results;
+	        if(data.response_code!==0){
+	        	difficultySetting[difficulty][number].push(category);
+	        }
+	    }
 	});
 }
 
@@ -84,18 +84,24 @@ var options = {
 	difficulty: function() {
 		difficulty = $(this).attr('id');
 		$('#difficulty').hide();
-		$('#numberOfQuestions').show();
 		for (i=0; i<numberOfQuestions.length; i++){
 			for (j=9; j<33; j++) {
 			checker(difficulty, numberOfQuestions[i], j);
 			}
 		}
+		//Loading screen goes in here
+		
+		$('#numberOfQuestions').show();
 	},
 	questions: function() {
 		questions = $(this).attr('data');
 		$('#numberOfQuestions').hide();
 		$('#category').show();
-		console.log(difficultySetting[difficulty][questions]);
+		errorResponseCategories = difficultySetting[difficulty][questions];
+		for (i=0; i<errorResponseCategories.length; i++){
+			$('#' + errorResponseCategories[i]).hide();
+		}
+		console.log(errorResponseCategories);
 	},
 	category: function() {
 		category = $(this).attr('id');
@@ -121,6 +127,7 @@ var token = {
 		+ "&type=multiple"
 		+ "&token=" + myToken;
 		$.get(useToken, function(data){
+			console.log(data);
 			questions = data.results;
 			console.log(questions)
 		});
