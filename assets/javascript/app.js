@@ -36,24 +36,25 @@ var searchText;
 var apiurl;
 var apiurlSize;
 var myresult;
-
-var easy = {
-	5: [],
-	15: [],
-	25: [],
-	50: []
-};
-var medium = {
-	5: [],
-	15: [],
-	25: [],
-	50: []
-};
-var hard = {
-	5: [],
-	15: [],
-	25: [],
-	50: []
+var difficultySetting = {
+	easy: {
+		5: [],
+		15: [],
+		25: [],
+		50: []
+	},
+	medium: {
+		5: [],
+		15: [],
+		25: [],
+		50: []
+	},
+	hard: {
+		5: [],
+		15: [],
+		25: [],
+		50: []
+	}
 };
 
 function checker(difficulty, number, category){
@@ -65,15 +66,16 @@ function checker(difficulty, number, category){
 	$.get(useToken, function(data){
 		questions = data.results;
 		if(data.response_code!==0){
-			if(difficulty === "easy") {
-				easy[number].push(category);
-			}
-			else if(difficulty === "medium") {
-				medium[number].push(category);
-			}
-			else{
-				hard[number].push(category);
-			}
+			// if(difficulty === "easy") {
+			// 	difficultySetting.easy[number].push(category);
+			// }
+			// else if(difficulty === "medium") {
+			// 	difficultySetting.medium[number].push(category);
+			// }
+			// else{
+			// 	difficultySetting.hard[number].push(category);
+			// }
+			difficultySetting[difficulty][number].push(category);
 		}
 	});
 }
@@ -93,15 +95,7 @@ var options = {
 		questions = $(this).attr('data');
 		$('#numberOfQuestions').hide();
 		$('#category').show();
-		// if(difficulty === "easy") {
-		// 	console.log(easy[questions]);
-		// }
-		// else if(difficulty === "medium") {
-		// 	console.log(medium[questions]);
-		// }
-		// else{
-		// 	console.log(hard[questions]);
-		// }
+		console.log(difficultySetting[difficulty][questions]);
 	},
 	category: function() {
 		category = $(this).attr('id');
