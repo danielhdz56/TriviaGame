@@ -4,6 +4,7 @@ window.onload = function() {
 	$('.categories').click(options.category);
 	$('#startButton').click(trivia.start);
 	$('.choice').click(trivia.guess);
+	
 	$('.difficulty, .questions, .categories').hover(
 		function(){
 			$(this).addClass('hoverSelection');
@@ -26,8 +27,9 @@ var category;
 var intervalId;
 var countdownRunning = false;
 var myToken;
-var questions;
 var correct;
+var userCorrect = 0;
+var userIncorrect = 0;
 var searchText;
 var apiurl;
 var apiurlSize;
@@ -79,7 +81,7 @@ var trivia = {
 	time: 30,
 	start: function() {
 		if (questions.length === 0) {
-			trivia.restart();
+			trivia.endScreen();
 		}
 		else {
 			trivia.time = 30;
@@ -136,15 +138,17 @@ var trivia = {
 	},
 	ranoutTime: function() {
 		clearInterval(intervalId);
+		userIncorrect++;
 		trivia.start();
-
 	},
 	correctAnswer: function() {
 		clearInterval(intervalId);
+		userCorrect++;
 		trivia.start();
 	},
 	incorrectAnswer: function() {
 		clearInterval(intervalId);
+		userIncorrect++;
 		trivia.start();
 	},
 	guess: function() {
@@ -165,7 +169,11 @@ var trivia = {
 		flickr.show();
 	},
 	endScreen: function() {
-		
+		$('#guessResponse').hide();
+		$('#gameOver').show();
+		$('#correctScore').html("Total correct questions: " + userCorrect);
+		$('#incorrectScore').html("Total incorrect questions: " + userIncorrect);
+		$('#totalScore').html("Total questions answered: " + userCorrect+userIncorrect);
 	}
 };
 var flickr = {
