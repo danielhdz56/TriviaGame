@@ -1,7 +1,28 @@
 window.onload = function() {
+	$('.difficulty').click(options.difficulty);
+	$('.questions').click(options.questions);
+	$('.categories').click(options.category);
 	$('#startButton').click(trivia.start);
-	$('h4').click(trivia.guess)
+	$('.choice').click(trivia.guess);
+	$('.difficulty, .questions, .categories').hover(
+		function(){
+			$(this).addClass('hoverSelection');
+		},
+		function(){
+			$(this).removeClass('hoverSelection');
+		}
+	);
+	$('.choice').hover(
+		function(){
+			$(this).addClass('hoverSelection');
+		}, function(){
+			$(this).removeClass('hoverSelection');
+		}
+	);
 }
+var difficulty;
+var questions;
+var category;
 var intervalId;
 var countdownRunning = false;
 var myToken;
@@ -11,6 +32,24 @@ var searchText;
 var apiurl;
 var apiurlSize;
 var myresult;
+
+var options = {
+	difficulty: function() {
+		difficulty = $(this).attr('id');
+		$('#difficulty').hide();
+		$('#numberOfQuestions').show();
+	},
+	questions: function() {
+		questions = $(this).attr('id');
+		$('#numberOfQuestions').hide();
+		$('#category').show();
+	},
+	category: function() {
+		category = $(this).attr('id');
+		$('#category').hide();
+		token.pull();
+	}
+};
 var token = {
 	retrieve: function() {
 		//The purpose of the session token is to not given the player the same questions once he has lost/won
@@ -18,58 +57,69 @@ var token = {
 		var requestToken = "https://opentdb.com/api_token.php?command=request";
 		$.get(requestToken, function(data) {
 			myToken = data.token;
-			token.pull();
 		});
 	},
 	pull: function() {
 		//I am using the session token load all the questions
-		var useToken = "https://opentdb.com/api.php?amount=50&category=9&difficulty=easy&type=multiple&token=" + myToken;
+		var useToken = "https://opentdb.com/api.php"
+		+ "?amount=" + questions
+		+ "&category=" + category
+		+ "&difficulty=" + difficulty
+		+ "&type=multiple"
+		+ "&token=" + myToken;
 		$.get(useToken, function(data){
 			questions = data.results;
 			console.log(questions)
 		});
+		$('#initial').show();
 	}
 }
 token.retrieve();
 var trivia = {
 	time: 30,
 	start: function() {
-		$('#initial').remove();
-		$('#triviaQA').show();
-		$('.response').empty();
-		$('#responseImg').hide();
-		countdownRunning = false;
-		if(!countdownRunning) {
-			$('#timer').html('Time Remaining: 30 Seconds');
-			intervalId = setInterval(trivia.count, 1000);
+		if (questions.length === 0) {
+			trivia.restart();
 		}
-		var randomNumber = Math.floor(Math.random()*questions.length);
-		$('#triviaQuestion').html(questions[randomNumber].question);
-		//Im going to load this array with all the answers
-		var answers = [];
-		//I am pushing this to a global variable so i can access it in the guess method
-		correct = questions[randomNumber].correct_answer;
-		answers.push(correct);
-		//This loads all the incorrect answers into the array answers
-		for(i = 0; i<questions[randomNumber].incorrect_answers.length;i++){
-			answers.push(questions[randomNumber].incorrect_answers[i])
+		else {
+			trivia.time = 30;
+			$('#initial').remove();
+			$('#triviaQA').show();
+			$('.response').empty();
+			$('#responseImg').hide();
+			countdownRunning = false;
+			if(!countdownRunning) {
+				$('#timer').html('Time Remaining: 30 Seconds');
+				intervalId = setInterval(trivia.count, 1000);
+			}
+			var randomNumber = Math.floor(Math.random()*questions.length);
+			$('#triviaQuestion').html(questions[randomNumber].question);
+			//Im going to load this array with all the answers
+			var answers = [];
+			//I am pushing this to a global variable so i can access it in the guess method
+			correct = questions[randomNumber].correct_answer;
+			answers.push(correct);
+			//This loads all the incorrect answers into the array answers
+			for(i = 0; i<questions[randomNumber].incorrect_answers.length;i++){
+				answers.push(questions[randomNumber].incorrect_answers[i])
+			}
+			//This dynamically adds all the answers, incorrect and correct, to the document in a random order
+			for(i = 0; i<4; i++){
+				//I first created a random number between 0 and the length of the answers array
+				var randomIndex = Math.floor(Math.random() * answers.length);
+				$('#'+i).html(answers[randomIndex]);
+				//I also give it a data-answer attribute in order to check it against correct answer
+				//I do that in the guess method of this object
+				$('#'+i).attr('data-answer', answers[randomIndex]);	
+				//I then get rid of that value i used from my answers array
+				//When I do this the lenght of my array is one less
+				//This means that when I loop through this again the randomIndex generated will be one less
+				answers.splice(randomIndex, 1);			
+			}
+			//I splice the question again so I don't reuse it
+			questions.splice(randomNumber, 1);
+			flickr.retrieve();
 		}
-		//This dynamically adds all the answers, incorrect and correct, to the document in a random order
-		for(i = 0; i<4; i++){
-			//I first created a random number between 0 and the length of the answers array
-			var randomIndex = Math.floor(Math.random() * answers.length);
-			$('#'+i).html(answers[randomIndex]);
-			//I also give it a data-answer attribute in order to check it against correct answer
-			//I do that in the guess method of this object
-			$('#'+i).attr('data-answer', answers[randomIndex]);	
-			//I then get rid of that value i used from my answers array
-			//When I do this the lenght of my array is one less
-			//This means that when I loop through this again the randomIndex generated will be one less
-			answers.splice(randomIndex, 1);			
-		}
-		//I splice the question again so I don't reuse it
-		questions.splice(randomNumber, 1);
-		flickr.retrieve();
 	},
 	count: function() {
 		trivia.time--;
@@ -80,6 +130,7 @@ var trivia = {
 			$('#triviaQA').hide();
 			$('#response').html('Out of Time');
 			$('#responseMessage').html("The Correct Answer was: " + correct);
+			flickr.show();
 			intervalId = setInterval(trivia.ranoutTime, 5000);
 		}
 	},
@@ -104,14 +155,17 @@ var trivia = {
 		if($(this).attr('data-answer') === correct){
 			$('#response').html('GENIUS');
 			$('#responseMessage').html("I don't know how you do it");
-			intervalId = setInterval(trivia.correctAnswer, 10000);
+			intervalId = setInterval(trivia.correctAnswer, 1000);
 		}
 		else{
 			$('#response').html('Incorrect');
 			$('#responseMessage').html("The correct answer was " + correct);
-			intervalId = setInterval(trivia.incorrectAnswer, 10000);
+			intervalId = setInterval(trivia.incorrectAnswer, 1000);
 		}
 		flickr.show();
+	},
+	endScreen: function() {
+		
 	}
 };
 var flickr = {
@@ -121,7 +175,7 @@ var flickr = {
 		searchText = correct.replace(/\s/g, '+');
 		apiurl = "https://api.flickr.com/services/rest/"
 		+ "?method=flickr.photos.search"
-		+ "&api_key=833f5b1dd5108c4898d441141b377a88"
+		+ "&api_key=7c6549a01454c9b945a03306f1b05afe"
 		+ "&text="
 		+ searchText
 		+ "&sort=relevance"
@@ -138,6 +192,8 @@ var flickr = {
 		+ "&per_page=10"
 		+ "&format=json"
 		+ "&nojsoncallback=1";
+		console.log(searchText)
+		console.log(apiurl)
 		flickr.pull();
 	},
 	pull: function(){
@@ -148,7 +204,7 @@ var flickr = {
 			$.each(json.photos.photo, function(i, myresult){
 				apiurlSize = "https://api.flickr.com/services/rest/"
 				+ "?method=flickr.photos.getSizes"
-				+ "&api_key=833f5b1dd5108c4898d441141b377a88"
+				+ "&api_key=7c6549a01454c9b945a03306f1b05afe"
 				+ "&photo_id="
 				//This grabs each object and calls on its id property
 				+ myresult.id

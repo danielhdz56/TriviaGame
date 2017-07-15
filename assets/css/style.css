@@ -1,6 +1,8 @@
+/* Sets the gradient background */
 html {
 	height: 100%;
 	background: #0f3443;
+	font-size: 30px;
 }
 body {
 	background: #0f3443; /* fallback for old browsers */
@@ -9,15 +11,82 @@ body {
 	background: linear-gradient(to top, #0f3443, #34e89e); /* Chrome 10-25, Safari 5.1-6 */ /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 	height: 100%;
 	color: #0f3443;
-
 }
-/* Centers the image appropriatly */
+.fullWidth {
+	padding-left: 0;
+	padding-right: 0;
+}
+#numberOfQuestions, #category, #initial {
+	display: none;
+}
+.panel-custom {
+	padding: 50px 15px;
+	background: #0f3443;
+	color: whitesmoke;
+}
+#startButton {
+	background: #0f3443;
+	color: whitesmoke;
+}
+#triviaQA {
+    background-color: transparent;
+    box-shadow: 0px 0px 1000px #0f3443;
+    border-radius: 1rem;
+    padding: 10px 20px 20px 20px;
+    display: none;
+}
+#timer{
+	margin-bottom: 30px;
+}
+#dynamic {
+	margin-top: 20px;
+}
+/* Centers the image appropriately */
 #responseImg {
 	max-width: 100%;
 	margin: 0 auto;
 	display: block;
 }
-#startButton {
+/* Font-Size */
+h1 {
+	font-size: 1rem;
+	margin-bottom: 20px;
+}
+h3 {
+	font-size: .6rem;
+}
+h4 {
+	font-size: .5rem;
+}
+p {
+	font-size: 11px;
+}
+@media screen and (min-width: 768px) {
+	h1 {
+		font-size: 1.5rem;
+	}
+	.btn {
+		font-size: .75rem;
+	}
+	h3 {
+		font-size: 1rem;
+	}
+	h4 {
+		font-size: .7rem;
+	}
+	p {
+		font-size: 20px;
+	}
+}
+.hoverSelection {
+	background-color: #34e89e;
+    box-shadow: 0px 0px 1000px #0f3443;
+    color: #0f3443;
+    cursor:pointer;
+}
+.hoverChoices {
 	background: #0f3443;
-	color: whitesmoke;
+	color: #34e89e;
+	padding: 10px;
+	border-radius: .5rem;
 }
