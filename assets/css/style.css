@@ -1,27 +1,56 @@
 /* Sets the gradient background */
 html {
 	height: 100%;
-	background: #0f3443;
+	background: whitesmoke;
 	font-size: 30px;
 }
 body {
-	background: #0f3443; /* fallback for old browsers */
-	background: -webkit-linear-gradient(bottom, #0f3443, #34e89e);
-	background: -o-linear-gradient(bottom, #0f3443, #34e89e);
-	background: linear-gradient(to top, #0f3443, #34e89e); /* Chrome 10-25, Safari 5.1-6 */ /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+	background: whitesmoke;
 	height: 100%;
-	color: #0f3443;
+	color: black;
 }
 .fullWidth {
 	padding-left: 0;
 	padding-right: 0;
 }
-#numberOfQuestions, #category, #initial, #gameOver {
+#numberOfQuestions, #category, #initial, #gameOver, #progress {
 	display: none;
+}
+.progress {
+	height: 30px;
+}
+.progress-bar {
+	background: pink;
+}
+#easy {
+	background: rgb(132, 84, 244);
+}
+#medium {
+	background: rgb(189, 84, 244);
+}
+#hard {
+	background: rgb(87, 206, 227);
+}
+#five, #fifty {
+	background: rgb(224, 91, 93)
+}
+#fifteen, #twentyFive {
+	background: rgb(227, 158, 137)
+}
+.firstColor {
+	background: red;
+}
+.secondColor {
+	background: blue;
+}
+.thirdColor {
+	background: yellow;
+}
+.fourthColor {
+	background: orange;
 }
 .panel-custom {
 	padding: 50px 15px;
-	background: #0f3443;
 	color: whitesmoke;
 }
 #startButton {

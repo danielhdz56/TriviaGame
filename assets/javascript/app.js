@@ -27,6 +27,7 @@ var triviaQuestions;
 //This holds the number of questions the user picks
 var questions;
 var numberOfQuestions = [5, 15, 25, 50];
+var possibilities = 96;
 var errorResponseCategories;
 var category;
 var intervalId;
@@ -76,22 +77,29 @@ function checker(difficulty, number, category){
 	        if(data.response_code!==0){
 	        	difficultySetting[difficulty][number].push(category);
 	        }
+	        possibilities--;
+	        //update progress bar
+	        var progressCategories = (1-(possibilities/96))*100;
+	        progressCategories = Math.round(progressCategories);
+	       	$(".progress-bar").attr("aria-valuenow", progressCategories);
+			$(".progress-bar").attr("style", "width: " + progressCategories + "%");
+	        if(possibilities === 0) {
+	        	$('#progress').hide();
+	        	$('#numberOfQuestions').show();
+	        }
 	    }
 	});
 }
-
 var options = {
 	difficulty: function() {
 		difficulty = $(this).attr('id');
 		$('#difficulty').hide();
+		$('#progress').show();
 		for (i=0; i<numberOfQuestions.length; i++){
 			for (j=9; j<33; j++) {
 			checker(difficulty, numberOfQuestions[i], j);
 			}
 		}
-		//Loading screen goes in here
-		
-		$('#numberOfQuestions').show();
 	},
 	questions: function() {
 		questions = $(this).attr('data');
@@ -99,9 +107,25 @@ var options = {
 		$('#category').show();
 		errorResponseCategories = difficultySetting[difficulty][questions];
 		for (i=0; i<errorResponseCategories.length; i++){
-			$('#' + errorResponseCategories[i]).hide();
+			$('#' + errorResponseCategories[i]).parent().hide();
 		}
 		console.log(errorResponseCategories);
+		var possibleCategories = $('#category').find('.col-xs-6:visible').children();
+		console.log($(possibleCategories))
+		for(i=0; i<possibleCategories.length; i++){
+			if(i%4 === 0){
+				$(possibleCategories[i]).addClass('firstColor');
+			}
+			else if(i%4 === 1){
+				$(possibleCategories[i]).addClass('secondColor');
+			}
+			else if(i%4 === 2){
+				$(possibleCategories[i]).addClass('thirdColor');
+			}
+			else {
+				$(possibleCategories[i]).addClass('fourthColor');
+			}
+		}
 	},
 	category: function() {
 		category = $(this).attr('id');
@@ -240,6 +264,7 @@ var trivia = {
 		$('#gameOver').hide();
 		userCorrect = 0;
 		userIncorrect = 0;
+		possibilities = 96;
 	}
 };
 var flickr = {
