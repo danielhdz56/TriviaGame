@@ -3,11 +3,13 @@ html {
 	height: 100%;
 	background: whitesmoke;
 	font-size: 30px;
+	font-family: 'Boogaloo', cursive;
 }
 body {
-	background: whitesmoke;
+	background: #C9D6FF;
 	height: 100%;
 	color: #504f4f;
+	font-family: 'Boogaloo', cursive;
 }
 .fullWidth {
 	padding-left: 0;
