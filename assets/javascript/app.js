@@ -15,9 +15,9 @@ window.onload = function() {
 	);
 	$('.choice').hover(
 		function(){
-			$(this).addClass('hoverSelection');
+			$(this).addClass('hoverChoices');
 		}, function(){
-			$(this).removeClass('hoverSelection');
+			$(this).removeClass('hoverChoices');
 		}
 	);
 }
