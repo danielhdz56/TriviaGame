@@ -28,6 +28,9 @@ var triviaQuestions;
 var questions;
 var numberOfQuestions = [5, 15, 25, 50];
 var possibilities = 96;
+var progressCategories;
+var possibleCategories;
+var lastCategory;
 var errorResponseCategories;
 var category;
 var intervalId;
@@ -79,7 +82,7 @@ function checker(difficulty, number, category){
 	        }
 	        possibilities--;
 	        //update progress bar
-	        var progressCategories = (1-(possibilities/96))*100;
+	        progressCategories = (1-(possibilities/96))*100;
 	        progressCategories = Math.round(progressCategories);
 	       	$(".progress-bar").attr("aria-valuenow", progressCategories);
 			$(".progress-bar").attr("style", "width: " + progressCategories + "%");
@@ -109,26 +112,33 @@ var options = {
 		for (i=0; i<errorResponseCategories.length; i++){
 			$('#' + errorResponseCategories[i]).parent().hide();
 		}
-		console.log(errorResponseCategories);
-		var possibleCategories = $('#category').find('.col-xs-6:visible').children();
-		console.log($(possibleCategories))
+		possibleCategories = $('#category').find('.col-xs-6:visible').children();
+		console.log(possibleCategories)
+		if (possibleCategories.length%2 === 1){
+			lastCategory = possibleCategories[possibleCategories.length - 1];
+			$(lastCategory).parent().removeClass("col-xs-6");
+			$(lastCategory).parent().addClass("col-xs-12");
+		}
 		for(i=0; i<possibleCategories.length; i++){
 			if(i%4 === 0){
-				$(possibleCategories[i]).addClass('firstColor');
+				$(possibleCategories[i]).addClass('green');
 			}
 			else if(i%4 === 1){
-				$(possibleCategories[i]).addClass('secondColor');
+				$(possibleCategories[i]).addClass('skyblue');
 			}
 			else if(i%4 === 2){
-				$(possibleCategories[i]).addClass('thirdColor');
+				$(possibleCategories[i]).addClass('yellow');
 			}
 			else {
-				$(possibleCategories[i]).addClass('fourthColor');
+				$(possibleCategories[i]).addClass('softred');
 			}
 		}
 	},
 	category: function() {
 		category = $(this).attr('id');
+		$(lastCategory).parent().removeClass("col-xs-12");
+		$(lastCategory).parent().addClass("col-xs-6");
+		$(possibleCategories).removeClass('green skyblue yellow softred');
 		$('#category').hide();
 		token.pull();
 	}
@@ -265,13 +275,19 @@ var trivia = {
 		userCorrect = 0;
 		userIncorrect = 0;
 		possibilities = 96;
+		progressCategories = 0;
+		errorResponseCategories = [];
+		$(".progress-bar").attr("aria-valuenow", 0);
+		$(".progress-bar").attr("style", "width: 0%");
 	}
 };
 var flickr = {
 	//I wrote it like this for readibility 
 	retrieve: function() {
 		//This accounts for spacing in the correct answer.
-		searchText = correct.replace(/\s/g, '+');
+		searchText = correct.replace(/&#(\d{0,4});/g, function(fullStr, str) { return String.fromCharCode(str); });
+		searchText = escape(searchText);
+		console.log(searchText);
 		apiurl = "https://api.flickr.com/services/rest/"
 		+ "?method=flickr.photos.search"
 		+ "&api_key=7c6549a01454c9b945a03306f1b05afe"
@@ -291,8 +307,8 @@ var flickr = {
 		+ "&per_page=10"
 		+ "&format=json"
 		+ "&nojsoncallback=1";
-		console.log(searchText)
-		console.log(apiurl)
+		console.log(searchText);
+		console.log(apiurl);
 		flickr.pull();
 	},
 	pull: function(){

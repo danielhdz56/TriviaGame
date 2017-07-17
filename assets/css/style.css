@@ -41,17 +41,17 @@ body {
 #fifteen, #twentyFive {
 	background: rgb(227, 158, 137);
 }
-.firstColor {
+.green {
 	background: rgb(92, 218, 183);
 }
-.secondColor {
+.skyblue {
 	background: rgb(87, 206, 227);
 }
-.thirdColor {
+.yellow {
 	background: rgb(250, 251, 180);
 	color: #7f7d7d;
 }
-.fourthColor {
+.softred {
 	background: rgb(226, 130, 131);
 }
 #startButton {
